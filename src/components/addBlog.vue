@@ -4,23 +4,17 @@
 		h2 Add a New Blog Post
 		form(v-if="!submitted")
 			main.main
-				label Blog Title:
-				input.input(v-model.lazy="blog.title" required)
-				label Author:
-				select.input(v-model="blog.author" required)
-					option(selected value="" hidden) -
-					option(v-for="author in authors") {{ author }}
-				label Blog Content:
-				froala(:tag="'textarea'" :config="editorConfig" v-model="blog.content")
-			aside.sidebar
-				.tags
-					h4 Blog Tags:
-					ul
-						li(v-for="tag in tags") 
-							label #[input(type="checkbox" name="tags" :value="tag" v-model="blog.tags")] {{ tag }}
-			.clearfix
-			br
-			button.btn.btn--center(@click.prevent="post") Add Blog
+				md-field
+					label Blog Title:
+					md-input(v-model.lazy="blog.title" required)
+				md-field
+					label Tags:
+					md-select(v-model="blog.tags" multiple)
+						md-option(v-for="(tag,index) in tags" :value="tag" :key="index") {{ tag }}
+				md-field
+					label Blog Content:
+					froala(:tag="'textarea'" :config="editorConfig" v-model="blog.content")
+			md-button.btn--center(@click.prevent="post") Add Blog
 		.message(v-if="submitted") Thanks for adding your post.
 		section#preview
 			h3(v-if="blog.title") {{ blog.title }}
@@ -35,8 +29,18 @@
 
 <script>
 // Imports
+import Vue from 'vue';
+import VueFroala from 'vue-froala-wysiwyg';
 import moment from 'moment';
 import axios from 'axios';
+import firebase from 'firebase';
+import fb from './firebaseConfig';
+import 'froala-editor/js/froala_editor.pkgd.min';
+import 'froala-editor/css/froala_editor.pkgd.min.css';
+import 'font-awesome/css/font-awesome.css';
+import 'froala-editor/css/froala_style.min.css';
+
+Vue.use(VueFroala);
 
 export default {
 	components:{
@@ -48,13 +52,8 @@ export default {
 				title: '',
 				content: '',
 				tags: [],
-				author: ""
+				author: firebase.auth().currentUser.displayName
 			},
-			authors: [
-				"Dru",
-				"Dro",
-				"DruDro"
-			],
 			tags: [
 				"Ninjas",
 				"Wizards",
@@ -66,7 +65,6 @@ export default {
 			editorConfig: {
 				events: {
 					'froalaEditor.initialized': function () {
-						console.log('initialized')
 					}
 				},
 				placeholderText: 'Edit Your Content Here!',
@@ -76,11 +74,8 @@ export default {
 	},
 	methods: {
 		post: function() {
-			axios.post('http://jsonplaceholder.typicode.com/posts',{
-				title: this.blog.title,
-				body: this.blog.content	,
-				userId:1
-			}).then(data=> this.submitted = true)
+			axios.post(`${fb.databaseURL}/posts.json`,this.blog)
+			.then(data => this.submitted = true)
 		}
 	},
 	computed: {
@@ -92,55 +87,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-	#add-blog * {
-		box-sizing: border-box;
-	}
-
-	#add-blog {
-		margin: 20px auto;
-		form {
-			overflow:auto;
-			.main,.sidebar{
-				float:left;
-			}
-			.main{
-				width:70%;
-				padding-right: 15px;
-				@media screen and (max-width: 1023px){
-					float:none;
-					width:100%;
-					padding:0;
-				} 
-			}
-			.sidebar{
-				width:30%;
-				padding-left:15px;
-				@media screen and (max-width: 1023px){
-					float:none;
-					padding:0;
-					width:100%;
-				}
-		ul {
-			list-style: none;
-		}
-
-		input {
-			display: inline-block;
-			margin: 0 10px 0 0;
-			vertical-align: middle;
-		}
-
-		label {
-			display: inline-block;
-			vertical-align: middle;
-			line-height: normal;
-			padding: 0;
-			margin: 0;
-		}
-			}
-		}
-	}
-
 	#preview {
 		margin: 30px auto;
 		position: relative;

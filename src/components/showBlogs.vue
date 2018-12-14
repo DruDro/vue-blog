@@ -2,11 +2,14 @@
 .container
 	.blog
 		h2 All posts
-		input.input(v-model="search" placeholder="Search posts")
+		md-field
+			label Search posts
+			md-input.input(v-model="search" placeholder="Search posts")
 		.posts
 			.post(v-for="blog in filteredBlogs")
-				h3(v-rainbow="" v-if="blog.title") {{ blog.title | toUpperCase }}
-				article.blog-content {{ blog.body | snippet }}
+				h3(v-if="blog.title") 
+					router-link(:to="`/blog/${blog.id}`") {{ blog.title }}
+				article.blog-content(v-html="trimHtml(blog.content, 200)")
 </template>
 
 
@@ -14,7 +17,9 @@
 
 	import moment from 'moment';
 	import axios from 'axios';
+	import fb from './firebaseConfig';
 	import searchMixin from '../mixins/searchMixin';
+	import trimHTML from 'trim-html';
 
 	export default {
 		
@@ -27,31 +32,25 @@
 		computed: {
 		},
 		methods: {
+			trimHtml: (val,n) => trimHTML(val,n).html
 		},
-		filters: {
-			snippet: val => `${val.slice(0,100)}...`,
-			toUpperCase: val => val.toUpperCase(),
+		filters:{
 		},
 		mixins:[
 			searchMixin
 		],
 		created(){
-			axios.get('http://jsonplaceholder.typicode.com/posts').then(res=>{
-				console.log(res)
-				this.blogs = res.data.slice(0,10);
-			})
+			axios.get(`${fb.databaseURL}/posts.json`).then(({data}) => {
+				const blogs = [];
+				for(let key in data){
+					data[key].id = key;
+					blogs.push(data[key]);
+					this.blogs = blogs;
+				}
+			});
 		}
 	}
 </script>
 
 <style scoped lang="scss">
-	.posts {
-		display:flex;
-		flex-flow:row wrap;
-		margin:0 -15px;
-		.post{
-			flex: 0 0 calc(50% - 30px);
-			margin:15px;
-		}
-	}
 </style>

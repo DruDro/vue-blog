@@ -1,30 +1,24 @@
 import Vue from 'vue';
-import VueRouter from 'vue-router';
-import Routes from './routes';
+import firebase from 'firebase';
+import router from './router';
+import './components/firebaseInit';
 import App from './App.vue';
-import VueFroala from 'vue-froala-wysiwyg';
-import 'froala-editor/js/froala_editor.pkgd.min';
-import 'froala-editor/css/froala_editor.pkgd.min.css';
-import 'font-awesome/css/font-awesome.css';
-import 'froala-editor/css/froala_style.min.css';
+import VueMaterial from 'vue-material';
+import 'vue-material/dist/vue-material.min.css';
+import 'vue-material/dist/theme/default.css';
 
-Vue.use(VueFroala);
-Vue.use(VueRouter);
-	const router = new VueRouter({
-		routes: Routes,
-		mode: 'history'
-	});
+Vue.use(VueMaterial);
 
-//Custom directives
-Vue.directive('rainbow', {
-	bind(el, binding, vnode) {
-		el.style.color = binding.value || `#${Math.random().toString().slice(2,8)}`;
-	}
+
+let app;
+firebase.auth().onAuthStateChanged(function(user) {
+  if (!app) {
+    /* eslint-disable no-new */
+    app = new Vue({
+      el: '#app',
+      router,
+      template: '<App/>',
+      components: { App }
+    });
+  }
 });
-
-
-new Vue({
-  el: '#app',
-  render: h => h(App),
-  router: router
-})
