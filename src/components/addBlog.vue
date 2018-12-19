@@ -1,30 +1,38 @@
 <template lang="pug">
 .container
-	#add-blog
-		h2 Add a New Blog Post
-		form(v-if="!submitted")
+	md-card#add-blog
+		md-card-header
+			h2 Add a New Blog Post
+		form.md-card-content(v-if="!submitted")
 			main.main
-				md-field
-					label Blog Title:
-					md-input(v-model.lazy="blog.title" required)
-				md-field
-					label Tags:
-					md-select(v-model="blog.tags" multiple)
-						md-option(v-for="(tag,index) in tags" :value="tag" :key="index") {{ tag }}
-				md-field
-					label Blog Content:
-					froala(:tag="'textarea'" :config="editorConfig" v-model="blog.content")
-			md-button.btn--center(@click.prevent="post") Add Blog
-		.message(v-if="submitted") Thanks for adding your post.
-		section#preview
-			h3(v-if="blog.title") {{ blog.title }}
+				.md-layout.md-gutter.md-alignment-center-center
+					.md-layout-item.md-size-75
+						md-field
+							label Blog Title:
+							md-input(v-model.lazy="blog.title" required)
+					.md-layout-item.md-size-25
+						md-chips(v-model="blog.tags" md-placeholder="Add tag...")
+					.md-layout-item.md-size-100
+						md-field
+							label Blog Content:
+							froala(:tag="'textarea'" :config="editorConfig" v-model="blog.content")
+				md-button.md-raised.md-primary(@click.prevent="post") Add Blog
+			
+	section.md-card#preview
+		md-card-header
+			h2 Preview
+		md-card-content
+			h1(v-if="blog.title") {{ blog.title }}
 			p.details
 				span.author(v-if="blog.author") {{ blog.author }}
 				span.date(v-if="blog.title") {{ date }}
 			froalaView(v-model="blog.content")
 			.tags(v-if="blog.tags.length")
-				ul
-					li(v-for="tag in blog.tags") {{ tag }}
+				md-list
+					md-list-item(v-for="(tag,index) in blog.tags" :key="index") {{ tag }}
+	md-snackbar(:md-active="submitted")
+		p Thanks for adding your post.
+			router-link(:to="`/blog/${blog.blogId}`") View post
 </template>
 
 <script>
@@ -48,11 +56,13 @@ export default {
 	},
 	data() {
 		return {
+			pageTitle:'Add Blog Post',
 			blog: {
 				title: '',
 				content: '',
 				tags: [],
-				author: firebase.auth().currentUser.displayName
+				author: firebase.auth().currentUser.displayName,
+				blogId: ''
 			},
 			tags: [
 				"Ninjas",
@@ -75,7 +85,10 @@ export default {
 	methods: {
 		post: function() {
 			axios.post(`${fb.databaseURL}/posts.json`,this.blog)
-			.then(data => this.submitted = true)
+			.then(({data}) => {
+				this.blog.blogId = data.name
+				this.submitted = true;
+			})
 		}
 	},
 	computed: {
@@ -86,12 +99,14 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style  lang="scss">
+.fr-box{
+	width: 100%;
+}
 	#preview {
 		margin: 30px auto;
 		position: relative;
 		overflow:hidden;
-		border-top:1px solid #000;
 		.details{
 			display:flex;
 			flex-flow:row wrap;

@@ -3,26 +3,31 @@ import Router from 'vue-router';
 import showBlogs from './components/showBlogs.vue';
 import singleBlog from './components/singleblog.vue';
 import addBlog from './components/addBlog.vue';
-import Login from './components/login.vue';
-import Register from './components/register.vue';
+import enter from './components/enter.vue';
+import error404 from './components/error404.vue';
 import firebase from 'firebase';
 
 Vue.use(Router);
+Vue.component('router-link', Vue.options.components.RouterLink);
+Vue.component('router-view', Vue.options.components.RouterView);
 
 let router = new Router({
 	routes: [
 		{
+			path: '*',
+			component: error404
+		},
+		{
 			path: '/',
 			component: showBlogs,
 			meta: {
-				requiresAuth: true
+				desiresPersonalization: true
 			}
 		},
 		{
 			path: '/blog/:id',
 			component: singleBlog,
 			meta: {
-				requiresAuth: true
 			}
 		},
 		{
@@ -33,17 +38,12 @@ let router = new Router({
 			}
 		},
 		{
-			path: '/login',
-			name: 'login',
-			component: Login,
-			meta: {
-				requiresGuest: true
-			}
+			path: '/enter/',
+			redirect:'/enter/login',
 		},
 		{
-			path: '/register',
-			name: 'register',
-			component: Register,
+			path: '/enter/:logreg',
+			component: enter,
 			meta: {
 				requiresGuest: true
 			}
@@ -61,7 +61,7 @@ router.beforeEach((to, from, next) => {
 	  if (!firebase.auth().currentUser) {
 		// Go to login
 		next({
-		  path: '/login',
+		  path: '/enter/login',
 		  query: {
 			redirect: to.fullPath
 		  }

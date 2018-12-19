@@ -1,5 +1,9 @@
 <template lang="pug">
-	article(v-html="blog.content")
+	section.article
+		header.article__header
+			.article__author {{ blog.author }}
+			.article__data {{ blog.date }}
+		article.article__content(v-html="blog.content")
 
 </template>
 
@@ -18,13 +22,13 @@ import fb from './firebaseConfig';
 				axios.get(`${fb.databaseURL}/posts/${this.$route.params.id}.json`)
 				.then(({data}) => 
 				{
-					console.log(data)
 					this.blog = data;
+					this.$store.state.title = this.blog.title
 				})
 			}
 		},
 		created(){
-			this.getPost()
+			this.getPost();
 		}
 	}
 </script>

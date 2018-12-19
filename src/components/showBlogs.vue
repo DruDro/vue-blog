@@ -1,15 +1,16 @@
 <template lang="pug">
-.container
+.md-layout
 	.blog
 		h2 All posts
 		md-field
 			label Search posts
-			md-input.input(v-model="search" placeholder="Search posts")
-		.posts
-			.post(v-for="blog in filteredBlogs")
-				h3(v-if="blog.title") 
-					router-link(:to="`/blog/${blog.id}`") {{ blog.title }}
-				article.blog-content(v-html="trimHtml(blog.content, 200)")
+			md-input.input(v-model="search")
+		md-card.post(v-for="(blog,index) in filteredBlogs" :key="index")
+			md-card-header
+				router-link(v-if="blog.title" :to="`/blog/${blog.id}`")
+					h3 {{ blog.title }}
+			md-card-content
+				article.blog-content(v-html="trimHtml(blog.content,34)")
 </template>
 
 
@@ -19,7 +20,7 @@
 	import axios from 'axios';
 	import fb from './firebaseConfig';
 	import searchMixin from '../mixins/searchMixin';
-	import trimHTML from 'trim-html';
+	import trim from 'trim-html';
 
 	export default {
 		
@@ -32,7 +33,9 @@
 		computed: {
 		},
 		methods: {
-			trimHtml: (val,n) => trimHTML(val,n).html
+			trimHtml: (val,n) => {
+				return trim(val,n).html
+			}
 		},
 		filters:{
 		},
@@ -48,6 +51,7 @@
 					this.blogs = blogs;
 				}
 			});
+			this.$store.state.title="Home"
 		}
 	}
 </script>
