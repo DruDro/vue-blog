@@ -15,31 +15,53 @@ let router = new Router({
 	routes: [
 		{
 			path: '*',
-			component: error404
+			component: error404,
+			meta: {
+				title: 'Nothing found',
+			}
 		},
 		{
 			path: '/',
 			component: showBlogs,
 			meta: {
+				title: 'All Posts',
 				desiresPersonalization: true
-			}
+			},
 		},
 		{
 			path: '/blog/:id',
 			component: singleBlog,
 			meta: {
+				title: 'Blog',
 			}
 		},
 		{
 			path: '/add',
 			component: addBlog,
 			meta: {
+				title: 'Nothing found',
 				requiresAuth: true
 			}
 		},
 		{
 			path: '/enter/',
 			redirect:'/enter/login',
+		},
+		{
+			path: '/enter/login',
+			component: enter,
+			meta:{				
+				title:"Log in",
+				requiresGuest: true
+			}
+		},
+		{
+			path: '/enter/register',
+			component: enter,
+			meta:{
+				title:"Register",
+				requiresGuest: true
+			}
 		},
 		{
 			path: '/enter/:logreg',
@@ -88,6 +110,7 @@ router.beforeEach((to, from, next) => {
 	  // Proceed to route
 	  next();
 	}
+	document.title = to.meta.title
   });
 
 export default router;

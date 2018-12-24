@@ -65,9 +65,9 @@ export default {
 @import "~vue-material/dist/theme/engine"; // Import the theme engine
 
 @include md-register-theme("default", (
-  primary: md-get-palette-color(teal, A200), // The primary color of your application
-  accent: md-get-palette-color(orange, A200), // The accent or secondary color
-  theme: dark
+  primary: md-get-palette-color(black, A200), // The primary color of your application
+  accent: md-get-palette-color(black, A200), // The accent or secondary color
+  
 ));
 
 @import "~vue-material/dist/theme/all"; // Apply the theme
@@ -92,5 +92,19 @@ export default {
   }
 .pull-right{
 	margin-left:auto!important
+}
+.responsive-media {
+	position: relative;
+	padding-bottom: 56.25%;
+	padding-top: 25px;
+	height: 0;
+	display:block;
+	audio:not(.md-image), canvas:not(.md-image), embed:not(.md-image), iframe:not(.md-image), img:not(.md-image), object:not(.md-image), video:not(.md-image) {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
 }
 </style>

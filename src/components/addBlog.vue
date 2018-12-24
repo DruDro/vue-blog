@@ -15,7 +15,7 @@
 					.md-layout-item.md-size-100
 						md-field
 							label Blog Content:
-							froala(:tag="'textarea'" :config="editorConfig" v-model="blog.content")
+							froala(:tag="'textarea'" :config="editorConfig" v-model="blog.content" videoResponsive="true")
 				md-button.md-raised.md-primary(@click.prevent="post") Add Blog
 			
 	section.md-card#preview
@@ -24,8 +24,8 @@
 		md-card-content
 			h1(v-if="blog.title") {{ blog.title }}
 			p.details
-				span.author(v-if="blog.author") {{ blog.author }}
-				span.date(v-if="blog.title") {{ date }}
+				span.author(v-if="blog.author") {{ blog.author.displayName }}
+				span.date(v-if="blog.title") {{ blog.date }}
 			froalaView(v-model="blog.content")
 			.tags(v-if="blog.tags.length")
 				md-list
@@ -61,8 +61,9 @@ export default {
 				title: '',
 				content: '',
 				tags: [],
-				author: firebase.auth().currentUser.displayName,
-				blogId: ''
+				author: firebase.auth().currentUser,
+				blogId: '',
+				date:moment().format("D.M.YYYY")
 			},
 			tags: [
 				"Ninjas",
@@ -78,30 +79,39 @@ export default {
 					}
 				},
 				placeholderText: 'Edit Your Content Here!',
-				charCounterCount: false
+				videoResponsive: true,
+				charCounterCount: false,
+				inlineClasses: {
+					'fr-class-code': 'Code',
+					'fr-class-highlighted': 'Highlighted',
+					'fr-class-transparency': 'Transparent',
+					'responsive-media': 'Responsive Media'
+				}
 			},
 		}
 	},
 	methods: {
 		post: function() {
-			axios.post(`${fb.databaseURL}/posts.json`,this.blog)
+			const {title,tags,content,date,author} = this.blog;
+			axios.post(`${fb.databaseURL}/posts.json`,{
+				title,tags,content,date,author
+			})
 			.then(({data}) => {
 				this.blog.blogId = data.name
 				this.submitted = true;
 			})
-		}
-	},
-	computed: {
-		date: () => {
-			return moment().format("D.M.YYYY")
 		}
 	}
 }
 </script>
 
 <style  lang="scss">
+#add-blog{
+	margin: 0 auto;
+}
 .fr-box{
 	width: 100%;
+	z-index:6;
 }
 	#preview {
 		margin: 30px auto;

@@ -1,7 +1,8 @@
 <template lang="pug">
 	section.article
 		header.article__header
-			.article__author {{ blog.author }}
+			h1.article__title {{ blog.title }}
+			.article__author {{ blog.author.displayName }}
 			.article__data {{ blog.date }}
 		article.article__content(v-html="blog.content")
 
@@ -23,7 +24,8 @@ import fb from './firebaseConfig';
 				.then(({data}) => 
 				{
 					this.blog = data;
-					this.$store.state.title = this.blog.title
+					this.$store.state.title = 'Blog';
+					document.title = this.blog.title
 				})
 			}
 		},
@@ -34,5 +36,4 @@ import fb from './firebaseConfig';
 </script>
 
 <style scoped>
-
 </style>
