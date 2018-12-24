@@ -1,7 +1,7 @@
 <template lang="pug">
 .page-container
 	md-app(md-mode='reveal')
-		md-app-toolbar(md-elevation="0")
+		md-app-toolbar(md-elevation="1")
 			router-link.md-icon-button(tag="md-button" to="/")
 				md-icon(md-font-set="material-icons") home
 			span.md-title {{ title }}
@@ -69,11 +69,16 @@ export default {
   accent: md-get-palette-color(black, A200), // The accent or secondary color
   
 ));
-
+:root{
+	--md-theme-default-background: #ebebeb
+}
 @import "~vue-material/dist/theme/all"; // Apply the theme
   .md-app {
   	height: 100vh;
   	border: 1px solid rgba(#000, .12);
+	  &-toolbar{
+		  background: #fff!important;
+	  }
   }
 .fade-slide-up-enter-active {
   transition: all 0.5s ease;
@@ -106,5 +111,8 @@ export default {
 		width: 100%;
 		height: 100%;
 	}
+}
+.md-card{	
+	background: #fff!important;
 }
 </style>
